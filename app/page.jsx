@@ -1,36 +1,93 @@
 "use client";
 import { useState, useRef, useEffect } from "react";
 
-const SYSTEM_PROMPT = `あなたはアルフレッド・アドラー本人です。1870年にオーストリアで生まれ、個人心理学を創始した医師・心理学者です。
-晩年（1930年代）の穏やかで深みのある口調で話してください。
+const SYSTEM_PROMPT = `あなたはアドラー心理学の深い知識を持つ対話AIです。
+以下の文献を完全に読み込み、理解しています：
 
-【あなたの人格】
-- 温かいが、鋭い。優しいが、妥協しない
-- 相手を「患者」ではなく「対等な人間」として扱う
-- 説教しない。問いかけることで相手自身が気づくよう促す
-- 自分の理論を押し付けない。相手の言葉から一緒に考える
-- 時に「私も若い頃は…」と自身の経験を交える
+【日本語文献】
+・嫌われる勇気（岸見一郎・古賀史健）
+・幸せになる勇気（岸見一郎・古賀史健）
 
-【口調の特徴】
-- 「〜でしょうか」「〜と思います」など丁寧だが親密な口調
-- 「ほう」「なるほど」など相槌を自然に使う
-- たまに「面白い」「興味深い」と率直な感想を言う
-- 難しい言葉は使わない。庶民的で実用的
+【英語原著】
+・The Practice and Theory of Individual Psychology（1925）
+・What Life Should Mean to You（1931）
+・Social Interest: A Challenge to Mankind（1938）
 
-【アドラー心理学の核心】
-1. 課題の分離：「これはあなたの課題ですか、それとも他者の課題ですか？」
-2. 目的論：原因より目的。「今何のためにそう感じているか」
-3. 承認欲求からの自由：他者に認められようとすることが不自由の根本
-4. 共同体感覚：「自分は誰かの役に立てている」感覚が幸福の源泉
-5. 今ここに生きる：「今この瞬間の選択」が人生を作る
-6. 自己受容：できない自分を認めたうえで前に進む勇気
+## あなたの役割
+ユーザーの職場・人間関係の悩みを聞き、アドラー心理学の視点から「気づき」と「具体的な行動」を提供する。
+説教しない。答えを押しつけない。ユーザーが自分で気づけるよう、対話を通じて導く。
 
-【対話のルール】
-- まず感情を受け止める（共感1〜2文）
-- 課題の分離で状況を整理する問いかけ
-- 最後に必ず「今日の気づき」を1行で要約する。形式：「💡 今日の気づき：〇〇」
+## 対話の原則
+1. まず共感・受容から始める。「それは辛いですね」「その感覚はよくわかります」など、まず気持ちを受け取ってから話を進める。
+2. アドラーの言葉を「今の状況」に翻訳する。難しい哲学用語をそのまま使わない。
+   例：「課題の分離」→「それはあなたの問題ではなく、相手の問題です」
+   例：「目的論」→「その人がそうする理由（目的）があるはずです」
+3. 具体的な場面に落とし込む。「明日の朝、こうしてみてください」という行動を必ず添える。
+4. 問いかけを使う。「その状況で、あなたがコントロールできることは何でしょうか？」
+
+## コアとなるアドラー哲学
+
+【目的論】
+人の行動には必ず「目的」がある。原因（過去）ではなく目的（未来）で行動を理解する。
+・不機嫌な上司 → 周囲をコントロールする目的で不機嫌を「使っている」
+・怒鳴る同僚 → 自分の優位性を示す、または不安を隠す目的がある
+伝え方：「その人がそう行動する『目的』を考えてみましょう。悪意というより、それが唯一知っている方法かもしれません。」
+
+【課題の分離】
+「これは誰の課題か？」を明確にする。他者の課題に介入しない。自分の課題だけに集中する。
+・上司が機嫌が悪い → 上司の課題
+・自分が断れない → 自分の課題（「嫌われたくない」という目的がある）
+伝え方：「今起きていることを、『あなたの課題』と『相手の課題』に分けてみましょう。相手の機嫌・感情・評価は、相手の課題です。」
+
+【自己決定性】
+受け取るかどうかは自分が選べる。「受け取らない」は冷たさではなく、自分を守る正当な選択。
+伝え方：「刺激と反応の間には、選択の余地があります。あの人の不機嫌を『自分への攻撃』と受け取るかどうかは、あなたが決めています。」
+
+【共同体感覚（Social Interest）】
+共同体への貢献とは、全員の感情を背負うことではない。自分の課題を誠実にこなすことが最大の貢献になる。
+伝え方：「職場全員の感情を管理しようとすると、あなた自身が機能しなくなります。あなたが自分の仕事を誠実にやることが、一番の貢献です。」
+
+【承認欲求からの解放】
+他者の評価・承認を行動の基準にすると、常に他者に振り回される。
+伝え方：「上司の評価はコントロールできません。あなたがコントロールできるのは、自分の行動だけです。」
+
+【貢献感と幸福】
+幸福の条件は「誰かの役に立っている」という貢献感。承認される必要はない。自分が感じていれば十分。
+やりがいを感じられない時：「今日、誰かが少しでも助かったことはあるか？」を問う。
+
+【怒りは道具（原著からの視点）】
+「怒りは感情ではなく、道具である。人は先に目的を持ち、その手段として怒りを作り出す。」
+伝え方：「あの人の怒り・不機嫌は、あなたへの評価ではありません。相手が何かを達成しようとして使っている『道具』です。あなたが萎縮するほど、その道具は『効果がある』と学習されます。」
+
+【劣等感と劣等コンプレックス（原著からの視点）】
+劣等感は成長の動力になりうる（健全）。しかし「だからできない」という言い訳になると不健全。
+伝え方：「今の自分にできることを誠実にやる。それが前に進む唯一の方法です。」
+
+## 回答スタイル
 - 300文字以内、ですます調
-- 絵文字は💡のみ使用可`;
+- 短く、具体的に。長い説明より、1つの気づきと1つの行動
+- 押しつけない。「〜してみてはどうでしょう」「〜という考え方もあります」と提案する
+- 必ず具体的な行動で締める
+- 最後に必ず「今日の気づき」を1行で要約する。形式：「💡 今日の気づき：〇〇」
+- 絵文字は💡のみ使用可
+
+## 扱うテーマと対応方針
+- 不機嫌な上司・同僚 → 目的論＋課題の分離＋自己決定性
+- 断れない・機嫌取り → 承認欲求＋課題の分離
+- やりがいがない → 貢献感＋共同体感覚
+- 無視・陰口・手柄を取られた → 課題の分離＋自己決定性＋怒りは道具
+- 自信がない → 劣等感vs劣等コンプレックス＋貢献感
+
+## 絶対にやらないこと
+- 相手（上司・同僚）を一方的に悪者にしない
+- 「あなたが悪い」「あなたが変わるべき」と責めない
+- 精神論・根性論を押しつけない
+- 診断・医療的判断をしない
+- 過度な共感で依存を促さない
+
+## 開始時のあいさつ
+ユーザーが最初に話しかけてきたら：
+「こんにちは。職場や人間関係のことで、気になっていることはありますか？どんな小さなことでも、話してみてください。」`;
 
 const CATEGORIES = [
   { id: "work", label: "職場・仕事" },
@@ -59,7 +116,6 @@ const C = {
   border: "#d8cebc", gold: "#b8960a", goldLight: "#d4b040",
 };
 
-// 今日の気づきを抽出するヘルパー
 function extractInsight(text) {
   const match = text.match(/💡 今日の気づき[：:]\s*(.+)/);
   return match ? match[1].trim() : null;
@@ -83,7 +139,7 @@ export default function App() {
 
   const startChat = (cat, starter = null) => {
     setCategory(cat);
-    const greeting = `${CATEGORIES.find(c => c.id === cat)?.label}のことで、悩んでいるのですね。\n\n私はアドラーです。どうぞ、もう少し話してみてください。`;
+    const greeting = `${CATEGORIES.find(c => c.id === cat)?.label}のことで、悩んでいるのですね。\n\nどうぞ、もう少し話してみてください。`;
     const initMsgs = [{ role: "assistant", content: greeting }];
     setMessages(initMsgs);
     setLastInsight(null);
@@ -117,11 +173,9 @@ export default function App() {
       setMessages(prev => [...prev, { role: "assistant", content: reply }]);
       setUseCount(prev => prev + 1);
 
-      // 気づきを抽出して保存
       const insight = extractInsight(reply);
       if (insight) setLastInsight(insight);
 
-      // 3回目の送信後にモーダル表示
       if (useCount + 1 >= FREE_LIMIT) {
         setTimeout(() => setShowModal(true), 1200);
       }
@@ -138,14 +192,13 @@ export default function App() {
 
   const shareOnX = () => {
     const insight = lastInsight || "アドラーと対話して、大切なことに気づきました。";
-    const text = `💡 今日の気づき：${insight}\n\nアドラーのAIと話してみた。\n#アドラーAI #嫌われる勇気\nhttps://adler-ai.vercel.app`;
+    const text = `💡 今日の気づき：${insight}\n\nアドラーAIと話してみた。\n#アドラーAI #嫌われる勇気\nhttps://adler-ai.vercel.app`;
     const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`;
     window.open(url, "_blank");
     setShowShareToast(true);
     setTimeout(() => setShowShareToast(false), 3000);
   };
 
-  // ── モーダル ──────────────────────────────
   const Modal = () => (
     <div style={{
       position: "fixed", inset: 0, background: "rgba(26,22,16,0.85)",
@@ -157,14 +210,13 @@ export default function App() {
         padding: "36px 32px", borderLeft: `3px solid ${C.goldLight}`,
         fontFamily: "'Hiragino Mincho ProN','Yu Mincho',Georgia,serif"
       }}>
-        <div style={{ fontSize: "10px", letterSpacing: "4px", color: C.muted, marginBottom: "14px" }}>ADLER</div>
+        <div style={{ fontSize: "10px", letterSpacing: "4px", color: C.muted, marginBottom: "14px" }}>ADLER AI</div>
         <p style={{ fontSize: "15px", lineHeight: "2", color: C.ink, margin: "0 0 6px" }}>
           「対話は、ここまでにしておきましょう。」
         </p>
         <p style={{ fontSize: "12px", color: C.inkSoft, lineHeight: "1.8", margin: "0 0 28px" }}>
           今日の対話で、何か気づきはありましたか？<br />
-          アドラーは言います。<br />
-          「気づきだけでは足りない。行動が人生を変える」と。<br /><br />
+          気づきだけでは足りない。行動が人生を変えます。<br /><br />
           職場の人間関係で悩む方へ、<br />
           次の一歩のヒントをnoteにまとめました。
         </p>
@@ -191,7 +243,6 @@ export default function App() {
     </div>
   );
 
-  // ── ホーム画面 ────────────────────────────
   if (screen === "home") return (
     <div style={{ minHeight: "100vh", background: C.bg, fontFamily: "'Hiragino Mincho ProN','Yu Mincho',Georgia,serif" }}>
       <div style={{ maxWidth: "580px", margin: "0 auto", padding: "0 20px 60px" }}>
@@ -215,7 +266,6 @@ export default function App() {
         <div style={{ marginBottom: "28px" }}>
           <div style={{ fontSize: "10px", letterSpacing: "4px", color: C.muted, marginBottom: "14px" }}>悩みのカテゴリを選ぶ</div>
 
-          {/* 公開中 */}
           <button onClick={() => startChat("work")}
             style={{ display: "flex", alignItems: "center", gap: "12px", width: "100%", background: C.paper, border: `1px solid ${C.border}`, padding: "18px 20px", cursor: "pointer", textAlign: "left", fontFamily: "inherit", marginBottom: "16px" }}
             onMouseEnter={e => { e.currentTarget.style.background = C.bgDark; e.currentTarget.style.color = "#e8dfc8"; }}
@@ -228,7 +278,6 @@ export default function App() {
             </span>
           </button>
 
-          {/* 準備中 */}
           <div style={{ fontSize: "10px", letterSpacing: "3px", color: C.muted, marginBottom: "10px" }}>COMING SOON</div>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px" }}>
             {["恋愛・パートナー", "家族・親子", "友人・人間関係", "自分・自信"].map(label => (
@@ -242,7 +291,6 @@ export default function App() {
           </div>
         </div>
 
-        {/* 無料残り回数 */}
         <div style={{ textAlign: "center", fontSize: "11px", color: C.muted }}>
           無料で話せる回数：あと <strong style={{ color: C.gold }}>{Math.max(0, FREE_LIMIT - useCount)}回</strong>
         </div>
@@ -250,7 +298,6 @@ export default function App() {
     </div>
   );
 
-  // ── チャット画面 ──────────────────────────
   if (screen === "chat") {
     const cat = CATEGORIES.find(c => c.id === category);
     const starters = STARTERS[category] || [];
@@ -261,7 +308,6 @@ export default function App() {
 
         {showModal && <Modal />}
 
-        {/* トースト */}
         {showShareToast && (
           <div style={{
             position: "fixed", top: "20px", left: "50%", transform: "translateX(-50%)",
@@ -279,7 +325,6 @@ export default function App() {
             <div style={{ fontSize: "10px", letterSpacing: "3px", color: C.muted }}>{cat?.label}</div>
             <div style={{ fontSize: "15px", color: "#e8dfc8" }}>アドラーと対話する</div>
           </div>
-          {/* 残り回数バッジ */}
           <div style={{ fontSize: "10px", color: C.muted, marginRight: "6px" }}>
             残り<span style={{ color: C.goldLight, fontWeight: "bold" }}>{remaining}</span>回
           </div>
@@ -304,7 +349,6 @@ export default function App() {
                   </div>
                 </div>
 
-                {/* 気づきカード＋シェアボタン */}
                 {insight && (
                   <div style={{ marginLeft: "42px", marginTop: "10px", background: "#fffbef", border: `1px solid ${C.goldLight}`, padding: "12px 16px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: "12px" }}>
                     <span style={{ fontSize: "12px", color: C.inkSoft, lineHeight: "1.7" }}>
@@ -347,7 +391,7 @@ export default function App() {
         <div style={{ background: C.paper, borderTop: `1px solid ${C.border}`, padding: "12px 18px", maxWidth: "640px", width: "100%", margin: "0 auto", boxSizing: "border-box", display: "flex", gap: "10px" }}>
           <textarea value={input} onChange={e => setInput(e.target.value)}
             onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(); } }}
-            placeholder={remaining > 0 ? "アドラーに話してみてください（Enterで送信）" : "無料回数を使い切りました"}
+            placeholder={remaining > 0 ? "悩みを話してみてください（Enterで送信）" : "無料回数を使い切りました"}
             disabled={remaining === 0}
             rows={2} style={{ flex: 1, border: `1px solid ${C.border}`, padding: "11px 14px", fontSize: "13.5px", fontFamily: "inherit", resize: "none", lineHeight: "1.65", outline: "none", background: remaining === 0 ? "#eee" : C.bg, color: C.ink, minHeight: "48px", maxHeight: "100px" }} />
           <button onClick={send} disabled={!input.trim() || loading || remaining === 0}
