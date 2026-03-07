@@ -51,7 +51,7 @@ const STARTERS = {
 };
 
 const NOTE_URL = "https://note.com/punk_ai";
-const FREE_LIMIT = 3;
+const FREE_LIMIT = 5;
 
 const C = {
   bg: "#f2ede3", bgDark: "#1a1610", paper: "#faf7f0",
@@ -162,9 +162,11 @@ export default function App() {
           「対話は、ここまでにしておきましょう。」
         </p>
         <p style={{ fontSize: "12px", color: C.inkSoft, lineHeight: "1.8", margin: "0 0 28px" }}>
-          無料でお話できるのは3回までです。<br />
-          もっと深く悩みを解きたい方へ、<br />
-          アドラー心理学の実践ガイドをnoteで公開しています。
+          今日の対話で、何か気づきはありましたか？<br />
+          アドラーは言います。<br />
+          「気づきだけでは足りない。行動が人生を変える」と。<br /><br />
+          職場の人間関係で悩む方へ、<br />
+          次の一歩のヒントをnoteにまとめました。
         </p>
 
         <a href={NOTE_URL} target="_blank" rel="noopener noreferrer"
@@ -212,16 +214,30 @@ export default function App() {
 
         <div style={{ marginBottom: "28px" }}>
           <div style={{ fontSize: "10px", letterSpacing: "4px", color: C.muted, marginBottom: "14px" }}>悩みのカテゴリを選ぶ</div>
+
+          {/* 公開中 */}
+          <button onClick={() => startChat("work")}
+            style={{ display: "flex", alignItems: "center", gap: "12px", width: "100%", background: C.paper, border: `1px solid ${C.border}`, padding: "18px 20px", cursor: "pointer", textAlign: "left", fontFamily: "inherit", marginBottom: "16px" }}
+            onMouseEnter={e => { e.currentTarget.style.background = C.bgDark; e.currentTarget.style.color = "#e8dfc8"; }}
+            onMouseLeave={e => { e.currentTarget.style.background = C.paper; e.currentTarget.style.color = C.ink; }}
+          >
+            <span style={{ width: "5px", height: "5px", borderRadius: "50%", background: C.gold, flexShrink: 0, marginTop: "3px" }} />
+            <span>
+              <span style={{ display: "block", fontSize: "14px", color: "inherit", marginBottom: "4px" }}>「働く」ことの悩みをアドラーと話す</span>
+              <span style={{ display: "block", fontSize: "11px", color: C.muted }}>人間関係・やりがい・自分らしさ</span>
+            </span>
+          </button>
+
+          {/* 準備中 */}
+          <div style={{ fontSize: "10px", letterSpacing: "3px", color: C.muted, marginBottom: "10px" }}>COMING SOON</div>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px" }}>
-            {CATEGORIES.map(cat => (
-              <button key={cat.id} onClick={() => startChat(cat.id)}
-                style={{ background: C.paper, border: `1px solid ${C.border}`, padding: "16px 18px", cursor: "pointer", textAlign: "left", fontSize: "13px", color: C.ink, fontFamily: "inherit", display: "flex", alignItems: "center", gap: "10px" }}
-                onMouseEnter={e => { e.currentTarget.style.background = C.bgDark; e.currentTarget.style.color = "#e8dfc8"; }}
-                onMouseLeave={e => { e.currentTarget.style.background = C.paper; e.currentTarget.style.color = C.ink; }}
+            {["恋愛・パートナー", "家族・親子", "友人・人間関係", "自分・自信"].map(label => (
+              <div key={label}
+                style={{ background: "transparent", border: `1px dashed ${C.border}`, padding: "16px 18px", fontSize: "13px", color: C.muted, fontFamily: "inherit", display: "flex", alignItems: "center", gap: "10px" }}
               >
-                <span style={{ width: "5px", height: "5px", borderRadius: "50%", background: C.gold, flexShrink: 0 }} />
-                {cat.label}
-              </button>
+                <span style={{ width: "5px", height: "5px", borderRadius: "50%", background: C.border, flexShrink: 0 }} />
+                {label}
+              </div>
             ))}
           </div>
         </div>
