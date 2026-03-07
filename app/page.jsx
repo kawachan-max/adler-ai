@@ -109,6 +109,8 @@ const STARTERS = {
 
 const NOTE_URL = "https://note.com/punk_ai";
 const FREE_LIMIT = 5;
+const PASSWORD = "work";
+const UNLOCKED_KEY = "adler_unlocked";
 
 const C = {
   bg: "#f2ede3", bgDark: "#1a1610", paper: "#faf7f0",
@@ -131,11 +133,35 @@ export default function App() {
   const [showModal, setShowModal] = useState(false);
   const [lastInsight, setLastInsight] = useState(null);
   const [showShareToast, setShowShareToast] = useState(false);
+  const [isUnlocked, setIsUnlocked] = useState(false);
+  const [passwordInput, setPasswordInput] = useState("");
+  const [passwordError, setPasswordError] = useState(false);
   const bottomRef = useRef(null);
+
+  // ローカルストレージから解除状態を読み込む
+  useEffect(() => {
+    try {
+      const unlocked = localStorage.getItem(UNLOCKED_KEY);
+      if (unlocked === "true") setIsUnlocked(true);
+    } catch {}
+  }, []);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, loading]);
+
+  const handlePassword = () => {
+    if (passwordInput.trim().toLowerCase() === PASSWORD) {
+      setIsUnlocked(true);
+      try { localStorage.setItem(UNLOCKED_KEY, "true"); } catch {}
+      setShowModal(false);
+      setPasswordInput("");
+      setPasswordError(false);
+    } else {
+      setPasswordError(true);
+      setTimeout(() => setPasswordError(false), 2000);
+    }
+  };
 
   const startChat = (cat, starter = null) => {
     setCategory(cat);
@@ -148,7 +174,7 @@ export default function App() {
   };
 
   const sendDirect = async (text, currentMsgs) => {
-    if (useCount >= FREE_LIMIT) {
+    if (useCount >= FREE_LIMIT && !isUnlocked) {
       setShowModal(true);
       return;
     }
@@ -176,7 +202,7 @@ export default function App() {
       const insight = extractInsight(reply);
       if (insight) setLastInsight(insight);
 
-      if (useCount + 1 >= FREE_LIMIT) {
+      if (useCount + 1 >= FREE_LIMIT && !isUnlocked) {
         setTimeout(() => setShowModal(true), 1200);
       }
     } catch {
@@ -199,6 +225,7 @@ export default function App() {
     setTimeout(() => setShowShareToast(false), 3000);
   };
 
+  // ── モーダル ──────────────────────────────
   const Modal = () => (
     <div style={{
       position: "fixed", inset: 0, background: "rgba(26,22,16,0.85)",
@@ -214,7 +241,7 @@ export default function App() {
         <p style={{ fontSize: "15px", lineHeight: "2", color: C.ink, margin: "0 0 6px" }}>
           「対話は、ここまでにしておきましょう。」
         </p>
-        <p style={{ fontSize: "12px", color: C.inkSoft, lineHeight: "1.8", margin: "0 0 28px" }}>
+        <p style={{ fontSize: "12px", color: C.inkSoft, lineHeight: "1.8", margin: "0 0 24px" }}>
           今日の対話で、何か気づきはありましたか？<br />
           気づきだけでは足りない。行動が人生を変えます。<br /><br />
           職場の人間関係で悩む方へ、<br />
@@ -225,10 +252,45 @@ export default function App() {
           style={{
             display: "block", background: C.bgDark, color: "#e8dfc8",
             padding: "14px 20px", textAlign: "center", textDecoration: "none",
-            fontSize: "13px", letterSpacing: "1px", marginBottom: "12px"
+            fontSize: "13px", letterSpacing: "1px", marginBottom: "20px"
           }}>
           noteで続きを読む →
         </a>
+
+        {/* パスワード解除エリア */}
+        <div style={{ borderTop: `1px solid ${C.border}`, paddingTop: "20px", marginBottom: "12px" }}>
+          <p style={{ fontSize: "11px", color: C.muted, margin: "0 0 10px" }}>
+            noteをご購入の方はパスワードを入力してください
+          </p>
+          <div style={{ display: "flex", gap: "8px" }}>
+            <input
+              type="text"
+              value={passwordInput}
+              onChange={e => setPasswordInput(e.target.value)}
+              onKeyDown={e => { if (e.key === "Enter") handlePassword(); }}
+              placeholder="パスワード"
+              style={{
+                flex: 1, border: `1px solid ${passwordError ? "#c0392b" : C.border}`,
+                padding: "10px 12px", fontSize: "13px", fontFamily: "inherit",
+                outline: "none", background: C.bg, color: C.ink,
+                transition: "border-color 0.2s"
+              }}
+            />
+            <button onClick={handlePassword}
+              style={{
+                background: C.bgDark, color: "#e8dfc8", border: "none",
+                padding: "10px 16px", fontSize: "12px", cursor: "pointer",
+                fontFamily: "inherit", whiteSpace: "nowrap"
+              }}>
+              解除
+            </button>
+          </div>
+          {passwordError && (
+            <p style={{ fontSize: "11px", color: "#c0392b", margin: "6px 0 0" }}>
+              パスワードが違います
+            </p>
+          )}
+        </div>
 
         <button onClick={() => setShowModal(false)}
           style={{
@@ -243,6 +305,7 @@ export default function App() {
     </div>
   );
 
+  // ── ホーム画面 ────────────────────────────
   if (screen === "home") return (
     <div style={{ minHeight: "100vh", background: C.bg, fontFamily: "'Hiragino Mincho ProN','Yu Mincho',Georgia,serif" }}>
       <div style={{ maxWidth: "580px", margin: "0 auto", padding: "0 20px 60px" }}>
@@ -292,16 +355,20 @@ export default function App() {
         </div>
 
         <div style={{ textAlign: "center", fontSize: "11px", color: C.muted }}>
-          無料で話せる回数：あと <strong style={{ color: C.gold }}>{Math.max(0, FREE_LIMIT - useCount)}回</strong>
+          {isUnlocked
+            ? <span style={{ color: C.gold }}>✓ パスワード解除済み・無制限で利用できます</span>
+            : <>無料で話せる回数：あと <strong style={{ color: C.gold }}>{Math.max(0, FREE_LIMIT - useCount)}回</strong></>
+          }
         </div>
       </div>
     </div>
   );
 
+  // ── チャット画面 ──────────────────────────
   if (screen === "chat") {
     const cat = CATEGORIES.find(c => c.id === category);
     const starters = STARTERS[category] || [];
-    const remaining = Math.max(0, FREE_LIMIT - useCount);
+    const remaining = isUnlocked ? Infinity : Math.max(0, FREE_LIMIT - useCount);
 
     return (
       <div style={{ minHeight: "100vh", background: C.bg, fontFamily: "'Hiragino Mincho ProN','Yu Mincho',Georgia,serif", display: "flex", flexDirection: "column" }}>
@@ -326,7 +393,10 @@ export default function App() {
             <div style={{ fontSize: "15px", color: "#e8dfc8" }}>アドラーと対話する</div>
           </div>
           <div style={{ fontSize: "10px", color: C.muted, marginRight: "6px" }}>
-            残り<span style={{ color: C.goldLight, fontWeight: "bold" }}>{remaining}</span>回
+            {isUnlocked
+              ? <span style={{ color: C.goldLight }}>✓ 解除済み</span>
+              : <>残り<span style={{ color: C.goldLight, fontWeight: "bold" }}>{remaining}</span>回</>
+            }
           </div>
           <div style={{ width: "34px", height: "34px", borderRadius: "50%", background: "#2e2618", border: `1px solid ${C.goldLight}`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "11px", color: C.goldLight }}>A</div>
         </div>
