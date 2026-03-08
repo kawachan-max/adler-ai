@@ -107,7 +107,7 @@ const STARTERS = {
   other: ["漠然と生きるのがしんどい", "何のために生きているかわからない", "毎日が同じで変わりたい"],
 };
 
-const NOTE_URL = "https://note.com/punk_ai";
+const NOTE_URL = "https://note.com/punk_ai/n/nada07d968de9";
 const FREE_LIMIT = 5;
 const PASSWORD = "work";
 const UNLOCKED_KEY = "adler_unlocked";
